@@ -13,6 +13,23 @@ import  sys
 import json
 import urllib2
 
+
+class road:
+	
+	def __init__(self, road_name):
+		self.road_name = road_name
+		self.month_list = []
+		self.price_list = []
+
+	def insertItem(self, month, price):
+		if month not in self.month_list:
+			self.month_list.append( month )
+		self.price_list.append( price )
+
+
+	def getPriceList(self):
+		return self.price_list
+
 # use arg1 URL to get json data
 def getData():
 	
@@ -34,35 +51,56 @@ def getData():
 	
 	return data
 
-def maxDistinctMonth(data):
+def getRoadData(data):
+
 	# find the road in a city has house trading
 	# records spreading in max_sidtinct_month
 	
 	tw_road_area = unicode("土地區段位置或建物區門牌", "utf-8")
-	tw_year = unicode("交易年月", "utf-8")
+	tw_year_month = unicode("交易年月", "utf-8")
 	tw_price = unicode("總價元", "utf-8")
 	
-	pattern = re.compile( "(.)*(路|街|巷)" )
+	pattern = re.compile( "(.+路)|([^路]+巷)|([^路]+街)" )
 
-	
-
+	road_dic = {}
 	for datum in data:
-		if tw_road_area in datum and tw_year in datum and tw_price in datum:
-			match_item = pattern.search( datum[tw_road_area].encode("utf8") )
-			if match_item:
-				print match_item.group()
+		if tw_road_area in datum and tw_year_month in datum and tw_price in datum:
+			road_name = pattern.search( datum[tw_road_area].encode("utf8") )
+			if road_name:
+				if road_name.group() not in road_dic:
+					road_dic[ road_name.group() ]  = road( road_name.group() )
+				road_dic[ road_name.group() ].insertItem( datum[tw_year_month], datum[tw_price] )
 		else:
 			print "Error json format is not match!" 
 			sys.exit(0)
+	
 
+	return road_dic
+
+def maxDictMonRoad( road_data ):
+
+	if len(road_data) == 0:
+		return -1;
+
+	sortedlist = sorted(road_data, key = lambda k: len( road_data[k].month_list ), reverse=True)
+	max_len = len( road_data[sortedlist[0]].month_list )
+	result_list = []
+	for road_name in sortedlist:
+		if len(road_data[road_name].month_list) == max_len:
+			result_list.append( road_data[road_name] )
+	
+	for road in result_list:
+		print "\"" + road.road_name + ", 最高成交價:"+ str(max(road.price_list))  + ", 最低成交價:"+ str( min(road.price_list) ) +"\""
 
 # run program
 if len( sys.argv ) == 2:
 	print __doc__
 	print "URL:", sys.argv[1]
 	data = getData()
-	maxDistinctMonth(data)
+	road_data = getRoadData(data)
+	maxDictMonRoad( road_data )
 else:
 	print "ERROR len(argv) should be 2"
+
 
 
