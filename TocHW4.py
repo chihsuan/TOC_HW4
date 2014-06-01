@@ -66,17 +66,22 @@ def getRoadData(data):
 	tw_price = unicode("總價元", "utf-8")
 
 	# regular expression 	
-	pattern = re.compile( "(.+路)|([^路]+巷)|([^路]+街)" )
+	pattern = re.compile( "(.+路)|(.+大道)|(.+街)" ) # priority first
+	pattern2 = re.compile( "(.+巷)" )                # if first is not match
 
 	# match road data
 	road_dic = {}
 	for datum in data:
+		# check data format is correct
 		if tw_road_area in datum and tw_year_month in datum and tw_price in datum:
-			road_name = pattern.search( datum[tw_road_area].encode("utf8") )
-			if road_name:
-				if road_name.group() not in road_dic:
-					road_dic[ road_name.group() ]  = road( road_name.group() )
-				road_dic[ road_name.group() ].insertItem( datum[tw_year_month], datum[tw_price] )
+			# pattern match
+			match = pattern.search( datum[tw_road_area].encode("utf8") )
+			if not match:
+				match = pattern2.search( datum[tw_road_area].encode("utf8") )
+			if match:	
+				if match.group() not in road_dic:
+					road_dic[ match.group() ]  = road( match.group() )
+				road_dic[ match.group() ].insertItem( datum[tw_year_month], datum[tw_price] )
 		else:
 			print "Error json format is not match!" 
 			sys.exit(0)
