@@ -6,6 +6,12 @@ Student nubmer: F84004022
 
 -python version: 2.7.3
 
+-purpose:
+	use 'regular_expression' to parse real-price housing information to count 
+	the highest sale price and lowest sale price of max_distinct_month road in city
+
+-argurments:
+	1. url, such as http://www.datagarage.io/api/5365dee31bc6e9d9463a0057 
 '''
 
 import re
@@ -13,7 +19,7 @@ import  sys
 import json
 import urllib2
 
-
+# class road record the road_name month_list price_list
 class road:
 	
 	def __init__(self, road_name):
@@ -25,7 +31,6 @@ class road:
 		if month not in self.month_list:
 			self.month_list.append( month )
 		self.price_list.append( price )
-
 
 	def getPriceList(self):
 		return self.price_list
@@ -59,9 +64,11 @@ def getRoadData(data):
 	tw_road_area = unicode("土地區段位置或建物區門牌", "utf-8")
 	tw_year_month = unicode("交易年月", "utf-8")
 	tw_price = unicode("總價元", "utf-8")
-	
+
+	# regular expression 	
 	pattern = re.compile( "(.+路)|([^路]+巷)|([^路]+街)" )
 
+	# match road data
 	road_dic = {}
 	for datum in data:
 		if tw_road_area in datum and tw_year_month in datum and tw_price in datum:
@@ -79,9 +86,14 @@ def getRoadData(data):
 
 def maxDictMonRoad( road_data ):
 
+	# sort the result to find the highest distinct_month road 
+	# and print the hightest sale price and lowest sale price
+
+	# if road data is none
 	if len(road_data) == 0:
 		return -1;
 
+	# sort
 	sortedlist = sorted(road_data, key = lambda k: len( road_data[k].month_list ), reverse=True)
 	max_len = len( road_data[sortedlist[0]].month_list )
 	result_list = []
