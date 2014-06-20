@@ -109,8 +109,6 @@ def maxDictMonRoad( road_data ):
 
 # run program
 if len( sys.argv ) == 2:
-	print __doc__
-	print "URL:", sys.argv[1]
 	data = getData()
 	road_data = getRoadData(data)
 	maxDictMonRoad( road_data )
