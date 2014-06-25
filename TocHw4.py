@@ -105,7 +105,7 @@ def maxDictMonRoad( road_data ):
 			result_list.append( road_data[road_name] )
 	
 	for road in result_list:
-		print "\"" + road.road_name + ", 最高成交價:"+ str(max(road.price_list))  + ", 最低成交價:"+ str( min(road.price_list) ) +"\""
+		print road.road_name + ", 最高成交價: "+ str(max(road.price_list))  + ", 最低成交價: "+ str( min(road.price_list) )
 
 # run program
 if len( sys.argv ) == 2:
