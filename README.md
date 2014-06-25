@@ -1,5 +1,4 @@
-#Theory of Computation 2014  Homework 4
-----
+#Theory of Computation HW4
 + Name: 黃啟軒
 + Student nubmer: F84004022
 
